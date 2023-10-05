@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RepoVault.Application\RepoVault.Application.csproj" />
+    </ItemGroup>
+
+
 </Project>

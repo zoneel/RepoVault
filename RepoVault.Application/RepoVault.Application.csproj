@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+
+    <ItemGroup>
+      <PackageReference Include="Octokit" Version="8.0.1" />
+    </ItemGroup>
+
 </Project>
