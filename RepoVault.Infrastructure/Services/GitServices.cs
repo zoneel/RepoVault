@@ -1,16 +1,24 @@
 ﻿using Octokit;
-//using RepoVault.Domain.Entities;
-
+using RepoVault.Application.Git;
+using RepoVault.Domain.Entities;
 namespace RepoVault.Infrastructure.Services;
 
 public class GitServices
 {
+    private readonly string _token;
+    private readonly IGitService _gitService;
+
+    public GitServices(string token)
+    {
+        _gitService = new GitService(token);
+        _token = token;
+    }
+    
     public bool UserIsAuthenticated(string token)
     {
-        Application.Git.GitService gitService = new(token);
         try
         {
-            return gitService.GetAuthenticatedUserLogin().Result != null;
+            return _gitService.GetAuthenticatedUserLogin().Result != null;
         }
         catch
         {
@@ -21,13 +29,12 @@ public class GitServices
     public async Task<string> GetAuthenticatedUserLogin(string token)
     {
         Application.Git.GitService gitService = new(token);
-        return await gitService.GetAuthenticatedUserLogin();
+        return await _gitService.GetAuthenticatedUserLogin();
     }
     
     public async Task<IReadOnlyList<string>> ShowAllReposNames(string token)
     {
-        Application.Git.GitService gitService = new(token);
-        var fullData = await gitService.GetAllRepositoriesData();
+        var fullData = await _gitService.GetAllRepositoriesData();
         List<string> repoNames = new();
         foreach(var repo in fullData)
         {
@@ -35,4 +42,24 @@ public class GitServices
         }
         return repoNames;
     }
+
+    public async Task<IReadOnlyList<IssueDTO>> ShowAllIssueForRepo(string token,long repoId)
+    {
+        var issues = await _gitService.GetAllIssuesForRepository(repoId);
+        return issues;
+    }
+    
+    public async Task<long> GetRepositoryId(string token, string repoName)
+    {
+        var fullData = await _gitService.GetAllRepositoriesData();
+        foreach(var repo in fullData)
+        {
+            if(repo.Name == repoName)
+            {
+                return repo.Id;
+            }
+        }
+        return 0;
+    } 
+    
 }

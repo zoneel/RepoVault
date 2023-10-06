@@ -3,7 +3,7 @@ using RepoVault.Domain.Entities;
 
 namespace RepoVault.Application.Git;
 
-public class GitService
+public class GitService : IGitService
 {
     private readonly GitHubClient _githubClient;
 
@@ -34,7 +34,7 @@ public class GitService
         
         return repoNames;
     }
-    
+
     // Method to get all repositories for the authenticated user
     public async Task<IReadOnlyList<RepositoryDTO>> GetAllRepositoriesData()
     {
@@ -52,9 +52,18 @@ public class GitService
     }
 
     // Method to get all issues for a repository
-    public async Task<IReadOnlyList<Issue>> GetAllIssuesForRepository(long repositoryId)
+    public async Task<IReadOnlyList<IssueDTO>> GetAllIssuesForRepository(long repositoryId)
     {
-        return await _githubClient.Issue.GetAllForRepository(repositoryId);
+        var issues = await _githubClient.Issue.GetAllForRepository(repositoryId);
+        
+        List<IssueDTO> issuesFullData = new();
+        
+        foreach(var issue in issues)
+        {
+            var issueDTO = new IssueDTO(issue.Title, issue.Body, issue.State.Value.ToString(), issue.CreatedAt.ToString(), issue.UpdatedAt.ToString(), issue.ClosedAt.ToString(), issue.User.Login, issue.Url);
+            issuesFullData.Add(issueDTO);
+        }
+        
+        return issuesFullData;
     }
-
 }
