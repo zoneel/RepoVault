@@ -11,4 +11,9 @@
       <PackageReference Include="Octokit" Version="8.0.1" />
     </ItemGroup>
 
+
+    <ItemGroup>
+      <ProjectReference Include="..\RepoVault.Domain\RepoVault.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
