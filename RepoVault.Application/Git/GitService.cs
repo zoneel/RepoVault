@@ -35,8 +35,6 @@ public class GitService : IGitService
         return repoNames;
     }
     
-
-
     // Method to get all repositories for the authenticated user
     public async Task<IReadOnlyList<RepositoryDTO>> GetAllRepositoriesData()
     {
@@ -68,4 +66,25 @@ public class GitService : IGitService
         
         return issuesFullData;
     }
+
+    public async Task<RepositoryDTO> GetAllDataForRepository(string repositoryName)
+    {
+        var repositoryId = await GetRepositoryId(repositoryName);
+        var repository = await _githubClient.Repository.Get(repositoryId);
+        var repoDTO = new RepositoryDTO(repository.Id, repository.Name, repository.Description, repository.Language, repository.CreatedAt, repository.UpdatedAt, repository.Size, repository.OpenIssuesCount);
+        return repoDTO;
+    }
+    
+    public async Task<long> GetRepositoryId(string repoName)
+    {
+        var fullData = await GetAllRepositoriesData();
+        foreach(var repo in fullData)
+        {
+            if(repo.Name == repoName)
+            {
+                return repo.Id;
+            }
+        }
+        return 0;
+    } 
 }

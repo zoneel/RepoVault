@@ -3,12 +3,12 @@ using RepoVault.Application.Git;
 using RepoVault.Domain.Entities;
 namespace RepoVault.Infrastructure.Services;
 
-public class GitServices
+public class GitRepository
 {
     private readonly string _token;
     private readonly IGitService _gitService;
 
-    public GitServices(string token)
+    public GitRepository(string token)
     {
         _gitService = new GitService(token);
         _token = token;
