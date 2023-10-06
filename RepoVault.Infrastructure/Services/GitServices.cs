@@ -1,4 +1,5 @@
 ﻿using Octokit;
+//using RepoVault.Domain.Entities;
 
 namespace RepoVault.Infrastructure.Services;
 
@@ -26,6 +27,12 @@ public class GitServices
     public async Task<IReadOnlyList<string>> ShowAllReposNames(string token)
     {
         Application.Git.GitService gitService = new(token);
-        return await gitService.GetAllRepositoriesNames();
+        var fullData = await gitService.GetAllRepositoriesData();
+        List<string> repoNames = new();
+        foreach(var repo in fullData)
+        {
+            repoNames.Add(repo.Name);
+        }
+        return repoNames;
     }
 }
