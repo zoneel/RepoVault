@@ -33,6 +33,11 @@ public class UserInteraction
 
     public static async Task ShowRepoIssues(GitServices gitServices, string token, string repoName)
     {
+            if (!gitServices.CheckIfRepositoryExists(repoName))
+            {
+                Console.WriteLine("Repository does not exist. Please try again.");
+                return;
+            }
         var repositoryId =  await gitServices.GetRepositoryId(token,repoName);
         var issues = await gitServices.ShowAllIssueForRepo(token,repositoryId);
 

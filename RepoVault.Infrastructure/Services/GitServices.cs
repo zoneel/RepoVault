@@ -25,6 +25,19 @@ public class GitServices
             return false;
         }
     }
+    
+    public bool CheckIfRepositoryExists(string repositoryName)
+    {
+        var repositories = _gitService.GetAllRepositoriesNames().Result;
+        if(repositories.Contains(repositoryName))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     public async Task<string> GetAuthenticatedUserLogin(string token)
     {

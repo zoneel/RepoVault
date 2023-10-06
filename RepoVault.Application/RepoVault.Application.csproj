@@ -16,4 +16,9 @@
       <ProjectReference Include="..\RepoVault.Domain\RepoVault.Domain.csproj" />
     </ItemGroup>
 
+
+    <ItemGroup>
+      <Folder Include="Encryption\" />
+    </ItemGroup>
+
 </Project>
