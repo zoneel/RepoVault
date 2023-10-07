@@ -11,9 +11,10 @@ public class BackupService : IBackupService
 
     public BackupService(string backupBasePath, IGitService gitService)
     {
-        backupFolderPath = Path.Combine(backupBasePath, "Backups");
+        backupFolderPath = Path.Combine(backupBasePath, "RepoVaultBackups");
         _gitService = gitService;
     }
+
     
     public void CreateBackupFolder(string repoName, out string repoBackupFolderPath)
     {
@@ -29,10 +30,10 @@ public class BackupService : IBackupService
         }
     }
 
-    public async Task CreateBackupRepoFile(string repoName, string repoBackupFolderPath)
+    public void CreateBackupRepoFile(string repoName, string repoBackupFolderPath)
     {
         string repoBackupFilePath = Path.Combine(repoBackupFolderPath, "repo_backup.json");
-        var repoData = await _gitService.GetAllDataForRepository(repoName);
+        var repoData =  _gitService.GetAllDataForRepository(repoName).Result;
         string json = JsonConvert.SerializeObject(repoData);
         File.WriteAllText(repoBackupFilePath, json);
     }

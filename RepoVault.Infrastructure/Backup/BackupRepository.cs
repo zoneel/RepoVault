@@ -7,14 +7,14 @@ public class BackupRepository : IBackupRepository
 {
     private readonly BackupService _backupService;
 
-    public BackupRepository()
+    public BackupRepository(IGitService gitService)
     {
-        _backupService = new BackupService("C:\\", new GitService("token"));
+        _backupService = new BackupService("C:\\",gitService);
     }
     
-    public async Task CreateFullBackup(string token, string repoName)
+    public void CreateFullBackup(string token, string repoName)
     {
         _backupService.CreateBackupFolder(repoName, out string repoBackupFolderPath);
-        await _backupService.CreateBackupRepoFile(repoName, repoBackupFolderPath);
+        _backupService.CreateBackupRepoFile(repoName, repoBackupFolderPath);
     }
 }

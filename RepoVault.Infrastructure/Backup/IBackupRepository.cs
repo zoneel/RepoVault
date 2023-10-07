@@ -2,5 +2,5 @@
 
 public interface IBackupRepository
 {
-    public Task CreateFullBackup(string token, string repoName);
+    public void CreateFullBackup(string token, string repoName);
 }
