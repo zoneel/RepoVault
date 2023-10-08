@@ -38,8 +38,15 @@ public class BackupService : IBackupService
         File.WriteAllText(repoBackupFilePath, json);
     }
 
-    public Task CreateBackupIssuesFile(string repoName)
+    public void CreateBackupIssuesFile(string repoName, string repoBackupFolderPath)
     {
-        throw new NotImplementedException();
+        var issuesData = _gitService.GetAllIssuesForRepository(repoName).Result;
+
+        foreach (var issue in issuesData)
+        {
+            string json = JsonConvert.SerializeObject(issuesData);
+            File.WriteAllText(Path.Combine(repoBackupFolderPath, $"{issue.Title}.json"), json);
+        }
     }
+
 }
