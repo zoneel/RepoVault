@@ -38,8 +38,7 @@ public class UserInteraction
                 Console.WriteLine("Repository does not exist. Please try again.");
                 return;
             }
-        var repositoryId =  await gitRepository.GetRepositoryId(token,repoName);
-        var issues = await gitRepository.ShowAllIssueForRepo(token,repositoryId);
+        var issues = await gitRepository.ShowAllIssueForRepo(token,repoName);
 
         foreach (var issue in issues)
         {

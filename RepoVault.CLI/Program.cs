@@ -1,4 +1,6 @@
-﻿using RepoVault.CLI;
+﻿using RepoVault.Application.Encryption;
+using RepoVault.Application.Git;
+using RepoVault.CLI;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Services;
 //pipeline
@@ -18,6 +20,6 @@ string repoName = Console.ReadLine();
 Console.WriteLine("Here are the issues for "+repoName+": ");
 await UserInteraction.ShowRepoIssues(gitServices, token, repoName);
 
-BackupRepository backupRepository = new();
+BackupRepository backupRepository = new(new GitService(token), new EncryptionService());
 backupRepository.CreateFullBackup(token, repoName);
 
