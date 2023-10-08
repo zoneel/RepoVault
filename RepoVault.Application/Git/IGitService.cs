@@ -9,7 +9,7 @@ public interface IGitService
 
     public Task<IReadOnlyList<string>> GetAllRepositoriesNames();
 
-    public Task<IReadOnlyList<IssueDTO>> GetAllIssuesForRepository(long repositoryId);
+    public Task<IReadOnlyList<IssueDTO>> GetAllIssuesForRepository(string repositoryName);
 
     public Task<IReadOnlyList<RepositoryDTO>> GetAllRepositoriesData();
 

@@ -52,9 +52,10 @@ public class GitService : IGitService
     }
 
     // Method to get all issues for a repository
-    public async Task<IReadOnlyList<IssueDTO>> GetAllIssuesForRepository(long repositoryId)
+    public async Task<IReadOnlyList<IssueDTO>> GetAllIssuesForRepository(string repositoryName)
     {
-        var issues = await _githubClient.Issue.GetAllForRepository(repositoryId);
+        var userLogin = await GetAuthenticatedUserLogin();
+        var issues = await _githubClient.Issue.GetAllForRepository(userLogin,repositoryName);
         
         List<IssueDTO> issuesFullData = new();
         
@@ -69,8 +70,9 @@ public class GitService : IGitService
 
     public async Task<RepositoryDTO> GetAllDataForRepository(string repositoryName)
     {
-        var repositoryId = await GetRepositoryId(repositoryName);
-        var repository = await _githubClient.Repository.Get(repositoryId);
+        var userLogin = await GetAuthenticatedUserLogin();
+        var repository = await _githubClient.Repository.Get(userLogin, repositoryName);
+        
         var repoDTO = new RepositoryDTO(repository.Id, repository.Name, repository.Description, repository.Language, repository.CreatedAt, repository.UpdatedAt, repository.Size, repository.OpenIssuesCount);
         return repoDTO;
     }
