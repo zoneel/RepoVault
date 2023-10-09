@@ -21,14 +21,14 @@ public class GitService : IGitService
     #region Methods
 
     // Method to get the authenticated user's login
-    public async Task<string> GetAuthenticatedUserLogin()
+    public async Task<string> GetAuthenticatedUserLoginAsync()
     {
         var user = await _githubClient.User.Current();
         return user.Login;
     }
 
     // Method to get all repositories for the authenticated user
-    public async Task<IReadOnlyList<string>> GetAllRepositoriesNames()
+    public async Task<IReadOnlyList<string>> GetAllRepositoriesNamesAsync()
     {
         var repositories = await _githubClient.Repository.GetAllForCurrent();
 
@@ -40,7 +40,7 @@ public class GitService : IGitService
     }
 
     // Method to get all repositories for the authenticated user
-    public async Task<IReadOnlyList<RepositoryDTO>> GetAllRepositoriesData()
+    public async Task<IReadOnlyList<RepositoryDTO>> GetAllRepositoriesDataAsync()
     {
         var repositories = await _githubClient.Repository.GetAllForCurrent();
 
@@ -57,9 +57,9 @@ public class GitService : IGitService
     }
 
     // Method to get all issues for a repository
-    public async Task<IReadOnlyList<IssueDTO>> GetAllIssuesForRepository(string repositoryName)
+    public async Task<IReadOnlyList<IssueDTO>> GetAllIssuesForRepositoryAsync(string repositoryName)
     {
-        var userLogin = await GetAuthenticatedUserLogin();
+        var userLogin = await GetAuthenticatedUserLoginAsync();
         var issues = await _githubClient.Issue.GetAllForRepository(userLogin, repositoryName);
 
         List<IssueDTO> issuesFullData = new();
@@ -76,9 +76,9 @@ public class GitService : IGitService
     }
 
     // Method to get all data for a repository
-    public async Task<RepositoryDTO> GetAllDataForRepository(string repositoryName)
+    public async Task<RepositoryDTO> GetAllDataForRepositoryAsync(string repositoryName)
     {
-        var userLogin = await GetAuthenticatedUserLogin();
+        var userLogin = await GetAuthenticatedUserLoginAsync();
         var repository = await _githubClient.Repository.Get(userLogin, repositoryName);
 
         var repoDTO = new RepositoryDTO(repository.Id, repository.Name, repository.Description, repository.Language,
@@ -87,18 +87,18 @@ public class GitService : IGitService
     }
 
     // Method to upload a repository to Github
-    public async Task UploadRemoteRepository(string repositoryName)
+    public async Task UploadRemoteRepositoryAsync(string repositoryName)
     {
         var newRepo = new NewRepository(repositoryName);
         newRepo.Private = true;
         var repoCreated = await _githubClient.Repository.Create(newRepo);
         Console.WriteLine($"Created new remote backup at {repoCreated.HtmlUrl}");
-        UploadIssuesToRepository(repoCreated.Owner.Login, repoCreated.Name,
+        UploadIssuesToRepositoryAsync(repoCreated.Owner.Login, repoCreated.Name,
             Path.Combine("C:\\RepoVaultBackups", repositoryName).Replace("_", " ")).Wait();
     }
 
     // Method to upload issues to a repository
-    public async Task UploadIssuesToRepository(string owner, string repoName, string LocalRepositoryPath)
+    public async Task UploadIssuesToRepositoryAsync(string owner, string repoName, string LocalRepositoryPath)
     {
         var directoryInfo = new DirectoryInfo(LocalRepositoryPath);
         foreach (var file in directoryInfo.GetFiles())

@@ -75,7 +75,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
             {
                 CorrectToken = token;
                 CorrectgitServices = gitServices;
-                Console.WriteLine($"Successfully logged in as {gitServices.GetAuthenticatedUserLogin(token).Result}");
+                Console.WriteLine($"Successfully logged in as {gitServices.GetAuthenticatedUserLoginAsync(token).Result}");
                 break;
             }
 
@@ -87,7 +87,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     public static void ShowUserRepositories(GitRepository gitServices1, string s)
     {
         var listnum = 1;
-        foreach (var repo in gitServices1.ShowAllReposNames(s).Result)
+        foreach (var repo in gitServices1.ShowAllReposNamesAsync(s).Result)
         {
             Console.WriteLine(listnum + ". " + repo);
             listnum++;
@@ -111,7 +111,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
             return;
         }
 
-        var issues = await gitRepository.ShowAllIssueForRepo(token, repoName);
+        var issues = await gitRepository.ShowAllIssueForRepoAsync(token, repoName);
         Console.WriteLine($"There are {issues.Count} issues in this repository.");
         foreach (var issue in issues) Console.WriteLine($"[{issue.Title}] - [Created At: {issue.CreatedAt}]");
     }

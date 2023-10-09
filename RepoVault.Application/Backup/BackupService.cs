@@ -37,14 +37,14 @@ public class BackupService : IBackupService
     public void CreateBackupRepoFile(string repoName, string repoBackupFolderPath)
     {
         var repoBackupFilePath = Path.Combine(repoBackupFolderPath, "repo_backup.json");
-        var repoData = _gitService.GetAllDataForRepository(repoName).Result;
+        var repoData = _gitService.GetAllDataForRepositoryAsync(repoName).Result;
         var json = JsonConvert.SerializeObject(repoData);
         File.WriteAllText(repoBackupFilePath, json);
     }
 
     public void CreateBackupIssuesFile(string repoName, string repoBackupFolderPath)
     {
-        var issuesData = _gitService.GetAllIssuesForRepository(repoName).Result;
+        var issuesData = _gitService.GetAllIssuesForRepositoryAsync(repoName).Result;
 
         foreach (var issue in issuesData)
         {
@@ -121,10 +121,10 @@ public class BackupService : IBackupService
             var folderName = $"{repositoryName} {latestBackupKey:yyyy-MM-dd-HH-mm-ss}";
             var latestBackupPath = Path.Combine(backupFolderPath, folderName);
             //decrypt the latest backup
-            _encryptionService.DecryptFolder(latestBackupPath, token);
+            _encryptionService.DecryptFolderAsync(latestBackupPath, token);
 
             var RepositoryAlreadyExistsOnGithub =
-                _gitService.GetAllRepositoriesNames().Result.Contains(folderName.Replace(" ", "_"));
+                _gitService.GetAllRepositoriesNamesAsync().Result.Contains(folderName.Replace(" ", "_"));
 
             if (RepositoryAlreadyExistsOnGithub)
             {
@@ -133,9 +133,9 @@ public class BackupService : IBackupService
                 return;
             }
 
-            _gitService.UploadRemoteRepository(folderName.Replace(" ", "_"));
+            _gitService.UploadRemoteRepositoryAsync(folderName.Replace(" ", "_"));
             Console.WriteLine("Created remote repository successfully!");
-            _encryptionService.EncryptFolder(latestBackupPath, token);
+            _encryptionService.EncryptFolderAsync(latestBackupPath, token);
         }
         else
         {

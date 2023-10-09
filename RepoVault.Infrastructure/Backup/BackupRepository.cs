@@ -31,7 +31,7 @@ public class BackupRepository : IBackupRepository
         _backupService.CreateBackupFolder(repoName, out var repoBackupFolderPath);
         _backupService.CreateBackupRepoFile(repoName, repoBackupFolderPath);
         _backupService.CreateBackupIssuesFile(repoName, repoBackupFolderPath);
-        _encryptionService.EncryptFolder(repoBackupFolderPath, token);
+        _encryptionService.EncryptFolderAsync(repoBackupFolderPath, token);
         Console.WriteLine("Encrypted backup created successfully!");
         _repoVaultDbRepository.AddBackupLog(new BackupLog(repoName, $"{DateTime.Now:yyyy-MM-dd-HH-mm-ss}"));
         Console.WriteLine("Added backup log to database successfully!");
