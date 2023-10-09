@@ -1,4 +1,5 @@
-﻿using Octokit;
+﻿using System.Text.Json;
+using Octokit;
 using RepoVault.Domain.Entities;
 
 namespace RepoVault.Application.Git;
@@ -88,5 +89,37 @@ public class GitService : IGitService
             }
         }
         return 0;
-    } 
-}
+    }
+
+    public async Task UploadRemoteRepository(string repositoryName)
+    {
+        NewRepository newRepo = new NewRepository(repositoryName);
+        newRepo.Private = true;
+        var repoCreated = await _githubClient.Repository.Create(newRepo);
+        Console.WriteLine($"Created new remote backup at {repoCreated.HtmlUrl}");
+        UploadIssuesToRepository(repoCreated.Owner.Login.ToString(), repoCreated.Name, Path.Combine("C:\\RepoVaultBackups", repositoryName).Replace("_"," ")).Wait();
+    }
+
+    public async Task UploadIssuesToRepository(string owner, string repoName, string LocalRepositoryPath)
+    {
+        var directoryInfo = new DirectoryInfo(LocalRepositoryPath);
+        foreach (var file in directoryInfo.GetFiles())
+        {
+            if(file.Name == "repo_backup.json")
+            {
+                continue;
+            }
+            string jsonContent = File.ReadAllText(file.FullName);
+            
+            IssueDTO myData = JsonSerializer.Deserialize<IssueDTO>(jsonContent);
+
+            var newIssue = new NewIssue(file.Name.Replace(".json", ""))
+            {
+                Body = myData.Body,
+            };
+            await _githubClient.Issue.Create(owner, repoName, newIssue);
+        }
+        
+    }
+
+    }

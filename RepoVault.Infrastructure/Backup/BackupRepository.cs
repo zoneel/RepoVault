@@ -13,7 +13,7 @@ public class BackupRepository : IBackupRepository
 
     public BackupRepository(IGitService gitService, EncryptionService encryptionService, RepoVaultDbRepository repoVaultDbRepository)
     {
-        _backupService = new BackupService("C:\\",gitService);
+        _backupService = new BackupService("C:\\",gitService, encryptionService);
         _encryptionService = encryptionService;
         _repoVaultDbRepository = repoVaultDbRepository;
     }
@@ -51,5 +51,10 @@ public class BackupRepository : IBackupRepository
     
             Console.WriteLine($"[{value} {key}]");
         }
+    }
+
+    public void CreateRemoteBackup(string repositoryName, string token)
+    {
+        _backupService.CreateRemoteRepoFromBackup(repositoryName, token);
     }
 }

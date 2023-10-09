@@ -14,5 +14,6 @@ public interface IGitService
     public Task<IReadOnlyList<RepositoryDTO>> GetAllRepositoriesData();
 
     public Task<RepositoryDTO> GetAllDataForRepository(string repositoryName);
+    public Task UploadRemoteRepository(string repositoryName);
 }
 
