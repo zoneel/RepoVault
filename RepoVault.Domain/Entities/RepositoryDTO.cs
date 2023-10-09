@@ -2,7 +2,8 @@
 
 public class RepositoryDTO
 {
-    public RepositoryDTO(long id, string name, string description, string language, DateTimeOffset createdAt, DateTimeOffset updatedAt, long size, long openIssuesCount)
+    public RepositoryDTO(long id, string name, string description, string language, DateTimeOffset createdAt,
+        DateTimeOffset updatedAt, long size, long openIssuesCount)
     {
         Id = id;
         Name = name;

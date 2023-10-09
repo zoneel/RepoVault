@@ -7,20 +7,28 @@ namespace RepoVault.Infrastructure.Backup;
 
 public class BackupRepository : IBackupRepository
 {
+    #region Constructor and Dependencies
+
     private readonly BackupService _backupService;
     private readonly EncryptionService _encryptionService;
     private readonly RepoVaultDbRepository _repoVaultDbRepository;
 
-    public BackupRepository(IGitService gitService, EncryptionService encryptionService, RepoVaultDbRepository repoVaultDbRepository)
+    public BackupRepository(IGitService gitService, EncryptionService encryptionService,
+        RepoVaultDbRepository repoVaultDbRepository)
     {
-        _backupService = new BackupService("C:\\",gitService, encryptionService);
+        _backupService = new BackupService("C:\\", gitService, encryptionService);
         _encryptionService = encryptionService;
         _repoVaultDbRepository = repoVaultDbRepository;
     }
-    
+
+    #endregion
+
+    #region Methods
+
+    // Method to create a full backup of a repository
     public void CreateFullBackup(string token, string repoName)
     {
-        _backupService.CreateBackupFolder(repoName, out string repoBackupFolderPath);
+        _backupService.CreateBackupFolder(repoName, out var repoBackupFolderPath);
         _backupService.CreateBackupRepoFile(repoName, repoBackupFolderPath);
         _backupService.CreateBackupIssuesFile(repoName, repoBackupFolderPath);
         _encryptionService.EncryptFolder(repoBackupFolderPath, token);
@@ -28,7 +36,8 @@ public class BackupRepository : IBackupRepository
         _repoVaultDbRepository.AddBackupLog(new BackupLog(repoName, $"{DateTime.Now:yyyy-MM-dd-HH-mm-ss}"));
         Console.WriteLine("Added backup log to database successfully!");
     }
-    
+
+    // Method to create a backup of a repository
     public void ShowRepoBackups()
     {
         var backups = _backupService.GetFileNamesFromPath();
@@ -44,17 +53,20 @@ public class BackupRepository : IBackupRepository
         var keys = latestBackups.Keys.ToList();
         var values = latestBackups.Values.ToList();
 
-        for (int i = 0; i < latestBackups.Count; i++)
+        for (var i = 0; i < latestBackups.Count; i++)
         {
-            DateTime key = keys[i];
-            string value = values[i];
-    
+            var key = keys[i];
+            var value = values[i];
+
             Console.WriteLine($"[{value}] - [{key}]");
         }
     }
 
+    // Method to create a remote backup of a repository
     public void CreateRemoteBackup(string repositoryName, string token)
     {
         _backupService.CreateRemoteRepoFromBackup(repositoryName, token);
     }
+
+    #endregion
 }

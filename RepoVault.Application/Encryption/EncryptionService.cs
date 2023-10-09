@@ -5,23 +5,25 @@ namespace RepoVault.Application.Encryption;
 
 public class EncryptionService : IEncryptionService
 {
-    private const int KeySize = 256; 
+    private const int KeySize = 256;
+
+    #region Methods
 
     public async Task EncryptFolder(string folderPath, string password)
     {
         try
         {
-            byte[] key = GenerateKey(password);
+            var key = GenerateKey(password);
 
-            string[] jsonFiles = Directory.GetFiles(folderPath, "*.json");
+            var jsonFiles = Directory.GetFiles(folderPath, "*.json");
 
-            foreach (string filePath in jsonFiles)
+            foreach (var filePath in jsonFiles)
             {
-                string jsonData = File.ReadAllText(filePath);
+                var jsonData = File.ReadAllText(filePath);
 
-                string encryptedData = EncryptStringAES(jsonData, key);
+                var encryptedData = EncryptStringAES(jsonData, key);
 
-                string encryptedFilePath = filePath + ".encrypted";
+                var encryptedFilePath = filePath + ".encrypted";
                 File.WriteAllText(encryptedFilePath, encryptedData);
 
                 File.Delete(filePath);
@@ -37,17 +39,17 @@ public class EncryptionService : IEncryptionService
     {
         try
         {
-            byte[] key = GenerateKey(password);
+            var key = GenerateKey(password);
 
-            string[] encryptedJsonFiles = Directory.GetFiles(folderPath, "*.json.encrypted");
+            var encryptedJsonFiles = Directory.GetFiles(folderPath, "*.json.encrypted");
 
-            foreach (string filePath in encryptedJsonFiles)
+            foreach (var filePath in encryptedJsonFiles)
             {
-                string encryptedData = File.ReadAllText(filePath);
+                var encryptedData = File.ReadAllText(filePath);
 
-                string decryptedData = DecryptStringAES(encryptedData, key);
+                var decryptedData = DecryptStringAES(encryptedData, key);
 
-                string decryptedFilePath = Path.Combine(folderPath, Path.GetFileNameWithoutExtension(filePath));
+                var decryptedFilePath = Path.Combine(folderPath, Path.GetFileNameWithoutExtension(filePath));
                 File.WriteAllText(decryptedFilePath, decryptedData);
 
                 File.Delete(filePath);
@@ -58,33 +60,34 @@ public class EncryptionService : IEncryptionService
             Console.WriteLine($"Error decrypting folder: {ex.Message}");
         }
     }
- 
+
     public byte[] GenerateKey(string password)
     {
-        using (Rfc2898DeriveBytes keyDerivation = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes("salt")))
+        using (var keyDerivation = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes("salt")))
         {
-            return keyDerivation.GetBytes(KeySize / 8); 
+            return keyDerivation.GetBytes(KeySize / 8);
         }
     }
 
     public string EncryptStringAES(string plainText, byte[] password)
     {
-        using (Aes aesAlg = Aes.Create())
+        using (var aesAlg = Aes.Create())
         {
             aesAlg.Key = password;
             aesAlg.IV = new byte[16]; // Initialization vector (IV) is all zeros to make it simple
 
-            ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+            var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-            using (MemoryStream msEncrypt = new MemoryStream())
+            using (var msEncrypt = new MemoryStream())
             {
-                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                 {
-                    using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                    using (var swEncrypt = new StreamWriter(csEncrypt))
                     {
                         swEncrypt.Write(plainText);
                     }
                 }
+
                 return Convert.ToBase64String(msEncrypt.ToArray());
             }
         }
@@ -92,18 +95,18 @@ public class EncryptionService : IEncryptionService
 
     public string DecryptStringAES(string cipherText, byte[] password)
     {
-        using (Aes aesAlg = Aes.Create())
+        using (var aesAlg = Aes.Create())
         {
             aesAlg.Key = password;
             aesAlg.IV = new byte[16]; // Initialization vector (IV) is all zeros to make it simple
 
-            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+            var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-            using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+            using (var msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
             {
-                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                 {
-                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                    using (var srDecrypt = new StreamReader(csDecrypt))
                     {
                         return srDecrypt.ReadToEnd();
                     }
@@ -112,5 +115,5 @@ public class EncryptionService : IEncryptionService
         }
     }
 
+    #endregion
 }
-

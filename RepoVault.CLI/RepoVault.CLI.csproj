@@ -9,13 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RepoVault.Infrastructure\RepoVault.Infrastructure.csproj" />
+        <ProjectReference Include="..\RepoVault.Infrastructure\RepoVault.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

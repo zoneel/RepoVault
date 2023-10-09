@@ -8,15 +8,14 @@
 
 
     <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Octokit" Version="8.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Octokit" Version="8.0.1"/>
     </ItemGroup>
 
 
     <ItemGroup>
-      <ProjectReference Include="..\RepoVault.Domain\RepoVault.Domain.csproj" />
+        <ProjectReference Include="..\RepoVault.Domain\RepoVault.Domain.csproj"/>
     </ItemGroup>
-
 
 
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 
@@ -8,6 +7,8 @@ namespace RepoVault.Application.Backup;
 
 public class BackupService : IBackupService
 {
+    #region Constructor and Dependencies
+
     private readonly string backupFolderPath;
     private readonly IGitService _gitService;
     private readonly IEncryptionService _encryptionService;
@@ -18,26 +19,26 @@ public class BackupService : IBackupService
         _gitService = gitService;
         _encryptionService = encryptionService;
     }
-    
+
+    #endregion
+
+    #region Methods
+
+    // Method to create a backup folder
     public void CreateBackupFolder(string repoName, out string repoBackupFolderPath)
     {
-        if (!Directory.Exists(backupFolderPath))
-        {
-            Directory.CreateDirectory(backupFolderPath);
-        }
+        if (!Directory.Exists(backupFolderPath)) Directory.CreateDirectory(backupFolderPath);
 
         repoBackupFolderPath = Path.Combine(backupFolderPath, $"{repoName} {DateTime.Now:yyyy-MM-dd-HH-mm-ss}");
-        if (!Directory.Exists(repoBackupFolderPath))
-        {
-            Directory.CreateDirectory(repoBackupFolderPath);
-        }
+        if (!Directory.Exists(repoBackupFolderPath)) Directory.CreateDirectory(repoBackupFolderPath);
     }
 
+    // Method to create a backup file for a repository
     public void CreateBackupRepoFile(string repoName, string repoBackupFolderPath)
     {
-        string repoBackupFilePath = Path.Combine(repoBackupFolderPath, "repo_backup.json");
-        var repoData =  _gitService.GetAllDataForRepository(repoName).Result;
-        string json = JsonConvert.SerializeObject(repoData);
+        var repoBackupFilePath = Path.Combine(repoBackupFolderPath, "repo_backup.json");
+        var repoData = _gitService.GetAllDataForRepository(repoName).Result;
+        var json = JsonConvert.SerializeObject(repoData);
         File.WriteAllText(repoBackupFilePath, json);
     }
 
@@ -47,11 +48,12 @@ public class BackupService : IBackupService
 
         foreach (var issue in issuesData)
         {
-            string json = JsonConvert.SerializeObject(issue);
+            var json = JsonConvert.SerializeObject(issue);
             File.WriteAllText(Path.Combine(repoBackupFolderPath, $"{issue.Title}.json"), json);
         }
     }
-    
+
+    // Method to get the names of all backup folders
     public Dictionary<DateTime, string> GetFileNamesFromPath()
     {
         try
@@ -64,32 +66,29 @@ public class BackupService : IBackupService
             }
 
             // Get an array of directory paths
-            string[] directoryPaths = Directory.GetDirectories(backupFolderPath);
+            var directoryPaths = Directory.GetDirectories(backupFolderPath);
 
             // Create a dictionary to store the results
             var directoryDictionary = new Dictionary<DateTime, string>();
 
             // Specify the format of the date in the directory name
-            string dateFormat = "yyyy-MM-dd-HH-mm-ss";
+            var dateFormat = "yyyy-MM-dd-HH-mm-ss";
 
             // Iterate through directory paths
-            foreach (string dirPath in directoryPaths)
+            foreach (var dirPath in directoryPaths)
             {
                 // Extract the directory name without the full path
-                string directoryName = Path.GetFileName(dirPath);
+                var directoryName = Path.GetFileName(dirPath);
 
                 // Split the directory name into parts using space as the separator
-                string[] parts = directoryName.Split(' ');
+                var parts = directoryName.Split(' ');
 
                 // Check if there are enough parts to extract a date and repository name
                 if (parts.Length >= 2)
-                {
                     // Attempt to parse the date part to DateTime using the specified format
-                    if (DateTime.TryParseExact(parts[1], dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                    {
+                    if (DateTime.TryParseExact(parts[1], dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None,
+                            out var date))
                         directoryDictionary[date] = parts[0];
-                    }
-                }
             }
 
             return directoryDictionary;
@@ -101,6 +100,7 @@ public class BackupService : IBackupService
         }
     }
 
+    // Method to create a remote repository from a backup
     public void CreateRemoteRepoFromBackup(string repositoryName, string token)
     {
         var backups = GetFileNamesFromPath();
@@ -111,7 +111,7 @@ public class BackupService : IBackupService
                 return new KeyValuePair<DateTime, string>(latestBackup.Key, latestBackup.Value);
             })
             .ToDictionary(kv => kv.Key, kv => kv.Value);
-        
+
         //check if repositoryName is present in latestBackups
         if (latestBackups.ContainsValue(repositoryName))
         {
@@ -123,19 +123,25 @@ public class BackupService : IBackupService
             //decrypt the latest backup
             _encryptionService.DecryptFolder(latestBackupPath, token);
 
-            var RepositoryAlreadyExistsOnGithub =  _gitService.GetAllRepositoriesNames().Result.Contains(folderName.Replace(" ","_"));
+            var RepositoryAlreadyExistsOnGithub =
+                _gitService.GetAllRepositoriesNames().Result.Contains(folderName.Replace(" ", "_"));
 
             if (RepositoryAlreadyExistsOnGithub)
             {
-                Console.WriteLine("Latest backup already exists on Github. Update current one by creating a new backup.");
+                Console.WriteLine(
+                    "Latest backup already exists on Github. Update current one by creating a new backup.");
                 return;
             }
-            _gitService.UploadRemoteRepository(folderName.Replace(" ","_"));
+
+            _gitService.UploadRemoteRepository(folderName.Replace(" ", "_"));
             Console.WriteLine("Created remote repository successfully!");
+            _encryptionService.EncryptFolder(latestBackupPath, token);
         }
         else
         {
             Console.WriteLine("Repository does not exist. Please try again.");
         }
     }
+
+    #endregion
 }

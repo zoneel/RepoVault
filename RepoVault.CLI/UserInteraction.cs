@@ -1,5 +1,4 @@
-﻿using RepoVault.Application.Backup;
-using RepoVault.Application.Encryption;
+﻿using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Database;
@@ -9,11 +8,11 @@ namespace RepoVault.CLI;
 
 public class UserInteraction
 {
-    
+    // Show the menu
     public static void ShowMenu()
     {
         // Store the current console foreground color
-        ConsoleColor originalColor = Console.ForegroundColor;
+        var originalColor = Console.ForegroundColor;
 
         // Set the foreground color to green
         Console.ForegroundColor = ConsoleColor.Green;
@@ -29,15 +28,17 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
                         888                                                                     
                        o888o                                                                                                                                                                
 ");
-        Console.ForegroundColor = originalColor; 
+        Console.ForegroundColor = originalColor;
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("Visit at github.com/zoneel/RepoVault");
         Console.WriteLine("Created by github.com/zoneel");
         Console.ForegroundColor = originalColor;
-        Console.WriteLine("================================================================================================");
+        Console.WriteLine(
+            "================================================================================================");
         Console.WriteLine("Welcome to RepoVault!");
     }
 
+    // Choose an action
     public static void ChooseAction(out string response)
     {
         ShowStyledResponse("What would you like to do? ");
@@ -46,22 +47,19 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
         Console.WriteLine("[3] Exit");
         response = Console.ReadLine();
     }
-    
+
+    // Check if user token is valid
     public static bool checkUserToken(string token, out GitRepository gitRepository)
     {
-        gitRepository = new(token);
-        if(gitRepository.UserIsAuthenticated(token))
-        {
-            return true;
-        }
-        else
-        {
-            token = null;
-            gitRepository = null;
-            return false;
-        }
+        gitRepository = new GitRepository(token);
+        if (gitRepository.UserIsAuthenticated(token)) return true;
+
+        token = null;
+        gitRepository = null;
+        return false;
     }
-    
+
+    // Authenticate user
     public static void AuthenticateUser(out string CorrectToken, out GitRepository CorrectgitServices)
     {
         CorrectToken = null;
@@ -69,23 +67,23 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
 
         while (true)
         {
-            ShowStyledResponse("Paste your Github user token here (don't know how to get one? Generate it here: github.com/settings/tokens): ");
-            string token = Console.ReadLine();
+            ShowStyledResponse(
+                "Paste your Github user token here (don't know how to get one? Generate it here: github.com/settings/tokens): ");
+            var token = Console.ReadLine();
 
-            if (checkUserToken(token, out GitRepository gitServices))
+            if (checkUserToken(token, out var gitServices))
             {
                 CorrectToken = token;
                 CorrectgitServices = gitServices;
                 Console.WriteLine($"Successfully logged in as {gitServices.GetAuthenticatedUserLogin(token).Result}");
-                break; 
+                break;
             }
-            else
-            {
-                Console.WriteLine("Your token is not working. Please try again!");
-            }
+
+            Console.WriteLine("Your token is not working. Please try again!");
         }
     }
-    
+
+    // Show user repositories
     public static void ShowUserRepositories(GitRepository gitServices1, string s)
     {
         var listnum = 1;
@@ -95,32 +93,35 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
             listnum++;
         }
     }
-    
+
+    // Show local backups
     public static void ShowLocalBackups(string s)
     {
-        BackupRepository backupRepository = new(new GitService(s), new EncryptionService(), new RepoVaultDbRepository(new RepoVaultDbContext()));
+        BackupRepository backupRepository = new(new GitService(s), new EncryptionService(),
+            new RepoVaultDbRepository(new RepoVaultDbContext()));
         backupRepository.ShowRepoBackups();
     }
+
+    // Show all Issues that repository has
     public static async Task ShowRepoIssues(GitRepository gitRepository, string token, string repoName)
     {
-            if (!gitRepository.CheckIfRepositoryExists(repoName))
-            {
-                Console.WriteLine("Repository does not exist. Please try again.");
-                return;
-            }
-        var issues = await gitRepository.ShowAllIssueForRepo(token,repoName);
-        Console.WriteLine($"There are {issues.Count} issues in this repository.");
-        foreach (var issue in issues)
+        if (!gitRepository.CheckIfRepositoryExists(repoName))
         {
-            Console.WriteLine($"[{issue.Title}] - [Created At: {issue.CreatedAt}]");
+            Console.WriteLine("Repository does not exist. Please try again.");
+            return;
         }
+
+        var issues = await gitRepository.ShowAllIssueForRepo(token, repoName);
+        Console.WriteLine($"There are {issues.Count} issues in this repository.");
+        foreach (var issue in issues) Console.WriteLine($"[{issue.Title}] - [Created At: {issue.CreatedAt}]");
     }
 
+    // Show styled response
     public static void ShowStyledResponse(string text)
     {
-        ConsoleColor originalColor = Console.ForegroundColor;
+        var originalColor = Console.ForegroundColor;
 
-        Console.ForegroundColor = ConsoleColor.Yellow;  
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(text);
         Console.ForegroundColor = originalColor;
     }

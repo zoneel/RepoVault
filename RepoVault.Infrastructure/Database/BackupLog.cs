@@ -10,8 +10,8 @@ public class BackupLog
         BackupDate = backupDate;
     }
 
-    [Key]
-    public int Id { get; set; }
+    [Key] public int Id { get; set; }
+
     public string RepositoryName { get; set; }
     public string BackupDate { get; set; }
 }

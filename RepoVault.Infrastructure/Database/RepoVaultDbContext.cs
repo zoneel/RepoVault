@@ -6,15 +6,10 @@ public class RepoVaultDbContext : DbContext
 {
     public DbSet<BackupLog> BackupLogs { get; set; }
 
-    public RepoVaultDbContext()
-    {
-        
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BackupLog>()
-            .ToTable("BackupLogs") 
+            .ToTable("BackupLogs")
             .HasKey(b => b.Id);
 
         modelBuilder.Entity<BackupLog>()
@@ -30,5 +25,4 @@ public class RepoVaultDbContext : DbContext
     {
         optionsBuilder.UseSqlite("Data Source=RepoVault.db");
     }
-
 }
