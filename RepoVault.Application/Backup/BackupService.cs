@@ -121,7 +121,7 @@ public class BackupService : IBackupService
             var folderName = $"{repositoryName} {latestBackupKey:yyyy-MM-dd-HH-mm-ss}";
             var latestBackupPath = Path.Combine(backupFolderPath, folderName);
             //decrypt the latest backup
-            _encryptionService.DecryptFolderAsync(latestBackupPath, token);
+             _encryptionService.DecryptFolderAsync(latestBackupPath, token).Wait();
 
             var RepositoryAlreadyExistsOnGithub =
                 _gitService.GetAllRepositoriesNamesAsync().Result.Contains(folderName.Replace(" ", "_"));
@@ -133,9 +133,9 @@ public class BackupService : IBackupService
                 return;
             }
 
-            _gitService.UploadRemoteRepositoryAsync(folderName.Replace(" ", "_"));
+            _gitService.UploadRemoteRepositoryAsync(folderName.Replace(" ", "_")).Wait();
             Console.WriteLine("Created remote repository successfully!");
-            _encryptionService.EncryptFolderAsync(latestBackupPath, token);
+            _encryptionService.EncryptFolderAsync(latestBackupPath, token).Wait();
         }
         else
         {

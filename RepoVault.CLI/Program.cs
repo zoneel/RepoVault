@@ -1,8 +1,11 @@
-﻿using RepoVault.Application.Encryption;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 using RepoVault.CLI;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Database;
+
+ 
 
 //pipeline
 UserInteraction.ShowMenu();

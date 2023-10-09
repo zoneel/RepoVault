@@ -5,6 +5,19 @@ namespace RepoVault.Infrastructure.Services;
 
 public class GitRepository : IGitRepository
 {
+    #region Constructor and Dependencies
+
+    private readonly string _token;
+    private readonly IGitService _gitService;
+
+    public GitRepository(string token)
+    {
+        _gitService = new GitService(token);
+        _token = token;
+    }
+
+    #endregion
+    
     public bool UserIsAuthenticated(string token)
     {
         try
@@ -54,16 +67,5 @@ public class GitRepository : IGitRepository
         return 0;
     }
 
-    #region Constructor and Dependencies
 
-    private readonly string _token;
-    private readonly IGitService _gitService;
-
-    public GitRepository(string token)
-    {
-        _gitService = new GitService(token);
-        _token = token;
-    }
-
-    #endregion
 }

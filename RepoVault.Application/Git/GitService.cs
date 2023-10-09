@@ -93,8 +93,8 @@ public class GitService : IGitService
         newRepo.Private = true;
         var repoCreated = await _githubClient.Repository.Create(newRepo);
         Console.WriteLine($"Created new remote backup at {repoCreated.HtmlUrl}");
-        UploadIssuesToRepositoryAsync(repoCreated.Owner.Login, repoCreated.Name,
-            Path.Combine("C:\\RepoVaultBackups", repositoryName).Replace("_", " ")).Wait();
+        var path = Path.Combine("C:\\RepoVaultBackups", repositoryName).Replace("_", " ");
+        await UploadIssuesToRepositoryAsync(repoCreated.Owner.Login, repoCreated.Name, path);
     }
 
     // Method to upload issues to a repository
@@ -104,7 +104,7 @@ public class GitService : IGitService
         foreach (var file in directoryInfo.GetFiles())
         {
             if (file.Name == "repo_backup.json") continue;
-            var jsonContent = File.ReadAllText(file.FullName);
+            var jsonContent = await File.ReadAllTextAsync(file.FullName);
 
             var myData = JsonSerializer.Deserialize<IssueDTO>(jsonContent);
 

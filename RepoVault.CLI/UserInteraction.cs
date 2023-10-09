@@ -8,6 +8,14 @@ namespace RepoVault.CLI;
 
 public class UserInteraction
 {
+    private readonly IGitRepository _gitRepository;
+    private readonly IBackupRepository _backupRepository;
+
+    public UserInteraction(IGitRepository _gitRepository)
+    {
+
+    }
+    
     // Show the menu
     public static void ShowMenu()
     {
