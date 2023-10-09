@@ -49,7 +49,7 @@ public class BackupRepository : IBackupRepository
             DateTime key = keys[i];
             string value = values[i];
     
-            Console.WriteLine($"[{value} {key}]");
+            Console.WriteLine($"[{value}] - [{key}]");
         }
     }
 

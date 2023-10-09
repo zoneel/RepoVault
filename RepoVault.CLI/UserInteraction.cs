@@ -37,21 +37,52 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
         Console.WriteLine("================================================================================================");
         Console.WriteLine("Welcome to RepoVault!");
     }
-    
-    public static void checkUserToken(string token, out GitRepository gitRepository)
-    {
 
+    public static void ChooseAction(out string response)
+    {
+        ShowStyledResponse("What would you like to do? ");
+        Console.WriteLine("[1] See your repositories");
+        Console.WriteLine("[2] See your backups");
+        Console.WriteLine("[3] Exit");
+        response = Console.ReadLine();
+    }
+    
+    public static bool checkUserToken(string token, out GitRepository gitRepository)
+    {
         gitRepository = new(token);
         if(gitRepository.UserIsAuthenticated(token))
         {
-            Console.WriteLine("Welcome, you are logged in as "+gitRepository.GetAuthenticatedUserLogin(token).Result);
+            return true;
         }
         else
         {
-            Console.WriteLine("You are not authenticated!");
             token = null;
             gitRepository = null;
-            return;
+            return false;
+        }
+    }
+    
+    public static void AuthenticateUser(out string CorrectToken, out GitRepository CorrectgitServices)
+    {
+        CorrectToken = null;
+        CorrectgitServices = null;
+
+        while (true)
+        {
+            ShowStyledResponse("Paste your Github user token here (don't know how to get one? Generate it here: github.com/settings/tokens): ");
+            string token = Console.ReadLine();
+
+            if (checkUserToken(token, out GitRepository gitServices))
+            {
+                CorrectToken = token;
+                CorrectgitServices = gitServices;
+                Console.WriteLine($"Successfully logged in as {gitServices.GetAuthenticatedUserLogin(token).Result}");
+                break; 
+            }
+            else
+            {
+                Console.WriteLine("Your token is not working. Please try again!");
+            }
         }
     }
     
@@ -65,12 +96,11 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
         }
     }
     
-    public static void ShowLocalBackups(GitRepository gitServices1, string s)
+    public static void ShowLocalBackups(string s)
     {
         BackupRepository backupRepository = new(new GitService(s), new EncryptionService(), new RepoVaultDbRepository(new RepoVaultDbContext()));
         backupRepository.ShowRepoBackups();
     }
-
     public static async Task ShowRepoIssues(GitRepository gitRepository, string token, string repoName)
     {
             if (!gitRepository.CheckIfRepositoryExists(repoName))
@@ -79,10 +109,19 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
                 return;
             }
         var issues = await gitRepository.ShowAllIssueForRepo(token,repoName);
-
+        Console.WriteLine($"There are {issues.Count} issues in this repository.");
         foreach (var issue in issues)
         {
-            Console.WriteLine($"{issue.Title} - [Created At: {issue.CreatedAt}]");
+            Console.WriteLine($"[{issue.Title}] - [Created At: {issue.CreatedAt}]");
         }
+    }
+
+    public static void ShowStyledResponse(string text)
+    {
+        ConsoleColor originalColor = Console.ForegroundColor;
+
+        Console.ForegroundColor = ConsoleColor.Yellow;  
+        Console.WriteLine(text);
+        Console.ForegroundColor = originalColor;
     }
 }
