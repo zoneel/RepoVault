@@ -22,9 +22,9 @@ RepoVault follows the Clean Architecture design pattern to ensure maintainabilit
 
 - **Application Layer:** Responsible for orchestrating use cases and business operations, the application layer bridges the gap between the domain layer and external interfaces. It coordinates how data flows and operations are executed.
 
-- **Infrastructure Layer:** This layer handles external concerns such as data storage, API interactions (including OctoKit for GitHub), and encryption. It provides implementation details for interacting with external systems while shielding the core domain from direct dependencies.
+- **Infrastructure Layer:** This layer handles external concerns such as data storage, API interactions (including OctoKit for GitHub). It provides implementation details for interacting with external systems while shielding the core domain from direct dependencies.
 
-- **CLI Layer:** Serving as the user interface, the Command-Line Interface (CLI) layer interacts with users and translates their commands into actions within the application. It provides a user-friendly interface for performing backups and managing data.
+- **CLI Layer:** Serving as the user interface, the Command-Line Interface (CLI) layer interacts with users and translates their commands into actions within the application. It provides a user-friendly CLI interface for performing backups and managing data.
 ![image](https://github.com/zoneel/RepoVault/assets/40122657/8f8d185d-b207-4790-aab7-47c4681102ab)
 
 
