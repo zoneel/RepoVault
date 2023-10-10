@@ -36,6 +36,17 @@ To get started with RepoVault, follow these steps:
 2. Build the project using Visual Studio or your preferred C# development environment. (There might be an issue with behaviour of SQLite while in debugging mode, when encountered try putting .db file inside RepoVault.CLI folder)
 4. Use the command-line interface to initiate backups and manage your data.
 
+## How to create my token?
+
+In order to use this app, you will need fine-grained token with proper permissions. This short guide will show you how to obtain one.
+
+1. Go to https://github.com/settings/tokens?type=beta
+2. Generate new fine-grained token with access to your repositories.
+3. Make sure you've selected those exact permissions for it:
+![image](https://github.com/zoneel/RepoVault/assets/40122657/50cdfaa5-3132-4164-a48f-f0cb7237ba29)
+4. Hit create and have a new freshly made token you can use in my app!
+
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE.md) - see the [LICENSE.md](LICENSE.md) file for details.
