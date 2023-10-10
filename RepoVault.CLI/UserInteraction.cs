@@ -76,7 +76,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
         while (true)
         {
             ShowStyledResponse(
-                "Paste your Github user token here (don't know how to get one? Generate it here: github.com/settings/tokens): ");
+                "Paste your Github user token here (don't know how to get one? See guide that I've made: https://github.com/zoneel/RepoVault#how-to-create-my-token): ");
             var token = Console.ReadLine();
 
             if (checkUserToken(token, out var gitServices))
