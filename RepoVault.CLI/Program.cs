@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 using RepoVault.CLI;
@@ -8,6 +9,17 @@ using RepoVault.Infrastructure.Database;
  
 
 //pipeline
+
+#region Database Initialization
+
+using var context = new RepoVaultDbContext(new DbContextOptionsBuilder<RepoVaultDbContext>()
+    .UseSqlite("Data Source=RepoVault.db")
+    .Options);
+
+context.Database.EnsureCreated();
+
+#endregion
+
 UserInteraction.ShowMenu();
 UserInteraction.AuthenticateUser(out var token, out var gitServices);
 BackupRepository backupRepository = new(new GitService(token), new EncryptionService(),
