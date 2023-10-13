@@ -7,17 +7,17 @@ using RepoVault.Infrastructure.Services;
 
 namespace RepoVault.CLI.UserInteraction;
 
-public class UserInteraction
+public class UserInteractionService : IUserInteractionService
 {
     private readonly IGitRepository _gitRepository;
 
-    public UserInteraction(IGitRepository _gitRepository)
+    public UserInteractionService(IGitRepository gitRepository)
     {
-
+        _gitRepository = gitRepository;
     }
     
     // Show the menu
-    public static void ShowMenu()
+    public  void ShowMenu()
     {
         // Store the current console foreground color
         var originalColor = Console.ForegroundColor;
@@ -47,7 +47,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Choose an action
-    public static void ChooseAction(out string response)
+    public  void ChooseAction(out string response)
     {
         ShowStyledResponse("What would you like to do? ");
         Console.WriteLine("[1] See your repositories");
@@ -57,7 +57,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Check if user token is valid
-    public static bool checkUserToken(string token, out GitRepository gitRepository)
+    public bool CheckUserToken(string token, out GitRepository gitRepository)
     {
         gitRepository = new GitRepository(token);
         if (gitRepository.UserIsAuthenticated(token)) return true;
@@ -68,7 +68,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Authenticate user
-    public static void AuthenticateUser(out string CorrectToken, out GitRepository CorrectgitServices)
+    public  void AuthenticateUser(out string CorrectToken, out GitRepository CorrectgitServices)
     {
         CorrectToken = null;
         CorrectgitServices = null;
@@ -79,7 +79,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
                 "Paste your Github user token here (don't know how to get one? See guide that I've made: https://github.com/zoneel/RepoVault#how-to-create-my-token): ");
             var token = Console.ReadLine();
 
-            if (checkUserToken(token, out var gitServices))
+            if (CheckUserToken(token, out var gitServices))
             {
                 CorrectToken = token;
                 CorrectgitServices = gitServices;
@@ -92,7 +92,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Show user repositories
-    public static void ShowUserRepositories(GitRepository gitServices1, string s)
+    public  void ShowUserRepositories(GitRepository gitServices1, string s)
     {
         var listnum = 1;
         foreach (var repo in gitServices1.ShowAllReposNamesAsync(s).Result)
@@ -103,7 +103,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Show local backups
-    public static void ShowLocalBackups(string s)
+    public  void ShowLocalBackups(string s)
     {
         BackupRepository backupRepository = new(new GitService(s), new EncryptionService(),
             new RepoVaultDbRepository(new RepoVaultDbContext()));
@@ -111,7 +111,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Show all Issues that repository has
-    public static async Task ShowRepoIssues(GitRepository gitRepository, string token, string repoName)
+    public  async Task ShowRepoIssues(GitRepository gitRepository, string token, string repoName)
     {
         if (!gitRepository.CheckIfRepositoryExists(repoName))
         {
@@ -125,7 +125,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Show styled response
-    public static void ShowStyledResponse(string text)
+    public  void ShowStyledResponse(string text)
     {
         var originalColor = Console.ForegroundColor;
 

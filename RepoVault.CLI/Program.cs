@@ -1,15 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RepoVault.Application;
 using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 using RepoVault.CLI;
 using RepoVault.CLI.UserInteraction;
+using RepoVault.Infrastructure;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Database;
 using RepoVault.Infrastructure.DatabaseRepository;
 
-ServiceRegistration.CreateHostBuilder(args).Build().Run();
+    var host = ServiceRegistration.CreateHostBuilder(args).Build();
+    var serviceProvider = host.Services;
 
+
+var UserInteraction = serviceProvider.GetRequiredService<UserInteractionService>();
 //pipeline
 UserInteraction.ShowMenu();
 UserInteraction.AuthenticateUser(out var token, out var gitServices);

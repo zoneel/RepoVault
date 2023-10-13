@@ -2,7 +2,7 @@
 
 namespace RepoVault.CLI.UserInteraction;
 
-public interface IUserInteraction
+public interface IUserInteractionService
 {
     // Show menu
     public void ShowMenu();
