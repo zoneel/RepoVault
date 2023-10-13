@@ -2,6 +2,8 @@
 using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 using RepoVault.Infrastructure.Database;
+using RepoVault.Infrastructure.Database.Models;
+using RepoVault.Infrastructure.DatabaseRepository;
 
 namespace RepoVault.Infrastructure.Backup;
 
@@ -10,11 +12,11 @@ public class BackupRepository : IBackupRepository
     #region Constructor and Dependencies
 
     private readonly BackupService _backupService;
-    private readonly EncryptionService _encryptionService;
-    private readonly RepoVaultDbRepository _repoVaultDbRepository;
+    private readonly IEncryptionService _encryptionService;
+    private readonly IRepoVaultDbRepository _repoVaultDbRepository;
 
-    public BackupRepository(IGitService gitService, EncryptionService encryptionService,
-        RepoVaultDbRepository repoVaultDbRepository)
+    public BackupRepository(IGitService gitService, IEncryptionService encryptionService,
+        IRepoVaultDbRepository repoVaultDbRepository)
     {
         _backupService = new BackupService("C:\\", gitService, encryptionService);
         _encryptionService = encryptionService;

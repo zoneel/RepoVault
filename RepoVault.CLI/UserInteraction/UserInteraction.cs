@@ -2,14 +2,14 @@
 using RepoVault.Application.Git;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Database;
+using RepoVault.Infrastructure.DatabaseRepository;
 using RepoVault.Infrastructure.Services;
 
-namespace RepoVault.CLI;
+namespace RepoVault.CLI.UserInteraction;
 
 public class UserInteraction
 {
     private readonly IGitRepository _gitRepository;
-    private readonly IBackupRepository _backupRepository;
 
     public UserInteraction(IGitRepository _gitRepository)
     {

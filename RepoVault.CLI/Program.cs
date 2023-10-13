@@ -1,11 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 using RepoVault.CLI;
+using RepoVault.CLI.UserInteraction;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Database;
+using RepoVault.Infrastructure.DatabaseRepository;
 
- 
+ServiceRegistration.CreateHostBuilder(args).Build().Run();
 
 //pipeline
 UserInteraction.ShowMenu();

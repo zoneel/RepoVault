@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RepoVault.Infrastructure.Database.Models;
 
 namespace RepoVault.Infrastructure.Database;
 
