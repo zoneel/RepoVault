@@ -5,9 +5,10 @@ using RepoVault.Application.Git;
 using RepoVault.CLI;
 using RepoVault.CLI.UserInteraction;
 using RepoVault.Infrastructure.Backup;
+using RepoVault.Infrastructure.Database;
 
 
-    var host = ServiceRegistration.CreateHostBuilder(args).Build();
+var host = ServiceRegistration.CreateHostBuilder(args).Build();
     var serviceProvider = host.Services;
 
 
@@ -17,7 +18,7 @@ var gitService = serviceProvider.GetRequiredService<IGitService>();
 
 #region Database Initialization
 
-using var context = new RepoVaultDbContext(new DbContextOptionsBuilder<RepoVaultDbContext>()
+await using var context = new RepoVaultDbContext(new DbContextOptionsBuilder<RepoVaultDbContext>()
     .UseSqlite("Data Source=RepoVault.db")
     .Options);
 

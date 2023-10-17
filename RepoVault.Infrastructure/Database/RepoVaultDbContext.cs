@@ -5,7 +5,7 @@ namespace RepoVault.Infrastructure.Database;
 
 public class RepoVaultDbContext : DbContext
 {
-    public required DbSet<BackupLog> BackupLogs { get; set; }
+    public DbSet<BackupLog> BackupLogs { get; set; }
 
     public RepoVaultDbContext()
     {
