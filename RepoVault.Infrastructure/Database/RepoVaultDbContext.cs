@@ -7,6 +7,16 @@ public class RepoVaultDbContext : DbContext
 {
     public required DbSet<BackupLog> BackupLogs { get; set; }
 
+    public RepoVaultDbContext()
+    {
+        
+    }
+    
+    public RepoVaultDbContext(DbContextOptions<RepoVaultDbContext> options)
+        : base(options)
+    {
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BackupLog>()

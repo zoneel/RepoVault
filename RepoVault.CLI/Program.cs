@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using RepoVault.Application.Encryption;
 using RepoVault.Application.Git;
 using RepoVault.CLI;
 using RepoVault.CLI.UserInteraction;
@@ -12,6 +14,17 @@ using RepoVault.Infrastructure.Backup;
 var userInteraction = serviceProvider.GetRequiredService<IUserInteractionService>();
 var gitService = serviceProvider.GetRequiredService<IGitService>();
 //pipeline
+
+#region Database Initialization
+
+using var context = new RepoVaultDbContext(new DbContextOptionsBuilder<RepoVaultDbContext>()
+    .UseSqlite("Data Source=RepoVault.db")
+    .Options);
+
+context.Database.EnsureCreated();
+
+#endregion
+
 userInteraction.ShowMenu();
 userInteraction.AuthenticateUser(out var token, out var gitServices); 
 await gitService.InitializeToken(token);
