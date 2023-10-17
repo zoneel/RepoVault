@@ -1,6 +1,6 @@
 ﻿using RepoVault.Infrastructure.Database.Models;
 
-namespace RepoVault.Infrastructure.Database;
+namespace RepoVault.Infrastructure.DatabaseRepository;
 
 public interface IRepoVaultDbRepository
 {

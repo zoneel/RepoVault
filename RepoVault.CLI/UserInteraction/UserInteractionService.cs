@@ -1,18 +1,16 @@
-﻿using RepoVault.Application.Encryption;
-using RepoVault.Application.Git;
-using RepoVault.Infrastructure.Backup;
-using RepoVault.Infrastructure.Database;
-using RepoVault.Infrastructure.DatabaseRepository;
-using RepoVault.Infrastructure.Services;
+﻿using RepoVault.Infrastructure.Backup;
+using RepoVault.Infrastructure.Git;
 
 namespace RepoVault.CLI.UserInteraction;
 
 public class UserInteractionService : IUserInteractionService
 {
     private readonly IGitRepository _gitRepository;
+    private readonly IBackupRepository _backupRepository;
 
-    public UserInteractionService(IGitRepository gitRepository)
+    public UserInteractionService(IGitRepository gitRepository, IBackupRepository backupRepository)
     {
+        _backupRepository = backupRepository;
         _gitRepository = gitRepository;
     }
     
@@ -47,31 +45,32 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Choose an action
-    public  void ChooseAction(out string response)
+    public void ChooseAction(out string response)
     {
         ShowStyledResponse("What would you like to do? ");
         Console.WriteLine("[1] See your repositories");
         Console.WriteLine("[2] See your backups");
         Console.WriteLine("[3] Exit");
-        response = Console.ReadLine();
+        response = Console.ReadLine() ?? string.Empty;
     }
 
-    // Check if user token is valid
-    public bool CheckUserToken(string token, out GitRepository gitRepository)
+    public bool CheckUserToken(string token, out IGitRepository gitRepository)
     {
-        gitRepository = new GitRepository(token);
-        if (gitRepository.UserIsAuthenticated(token)) return true;
+        if (_gitRepository.UserIsAuthenticated(token))
+        {
+            gitRepository = _gitRepository;
+            return true;
+        }
 
-        token = null;
         gitRepository = null;
         return false;
     }
 
     // Authenticate user
-    public  void AuthenticateUser(out string CorrectToken, out GitRepository CorrectgitServices)
+    public  void AuthenticateUser(out string correctToken, out IGitRepository correctGitServices)
     {
-        CorrectToken = null;
-        CorrectgitServices = null;
+        correctToken = null;
+        correctGitServices = null;
 
         while (true)
         {
@@ -81,8 +80,8 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
 
             if (CheckUserToken(token, out var gitServices))
             {
-                CorrectToken = token;
-                CorrectgitServices = gitServices;
+                correctToken = token;
+                correctGitServices = gitServices;
                 Console.WriteLine($"Successfully logged in as {gitServices.GetAuthenticatedUserLoginAsync(token).Result}");
                 break;
             }
@@ -92,26 +91,25 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     }
 
     // Show user repositories
-    public  void ShowUserRepositories(GitRepository gitServices1, string s)
+    public  void ShowUserRepositories(IGitRepository gitServices1, string s)
     {
-        var listnum = 1;
-        foreach (var repo in gitServices1.ShowAllReposNamesAsync(s).Result)
+        var listNum = 1;
+        var list = gitServices1.ShowAllReposNamesAsync(s).Result;
+        foreach (var repo in list)
         {
-            Console.WriteLine(listnum + ". " + repo);
-            listnum++;
+            Console.WriteLine(listNum + ". " + repo);
+            listNum++;
         }
     }
 
     // Show local backups
     public  void ShowLocalBackups(string s)
     {
-        BackupRepository backupRepository = new(new GitService(s), new EncryptionService(),
-            new RepoVaultDbRepository(new RepoVaultDbContext()));
-        backupRepository.ShowRepoBackups();
+        _backupRepository.ShowRepoBackups();
     }
 
     // Show all Issues that repository has
-    public  async Task ShowRepoIssues(GitRepository gitRepository, string token, string repoName)
+    public  async Task ShowRepoIssues(IGitRepository gitRepository, string token, string repoName)
     {
         if (!gitRepository.CheckIfRepositoryExists(repoName))
         {

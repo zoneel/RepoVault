@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RepoVault.Application.Backup;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Database;
 using RepoVault.Infrastructure.DatabaseRepository;
-using RepoVault.Infrastructure.Services;
+using RepoVault.Infrastructure.Git;
 
 namespace RepoVault.Infrastructure;
 

@@ -1,8 +1,8 @@
 ﻿namespace RepoVault.Domain.Entities;
 
-public class RepositoryDTO
+public class RepositoryDto
 {
-    public RepositoryDTO(long id, string name, string description, string language, DateTimeOffset createdAt,
+    public RepositoryDto(long id, string name, string description, string language, DateTimeOffset createdAt,
         DateTimeOffset updatedAt, long size, long openIssuesCount)
     {
         Id = id;
