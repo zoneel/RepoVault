@@ -1,4 +1,7 @@
-﻿using RepoVault.Infrastructure.Backup;
+﻿using Octokit;
+using RepoVault.Application.Git;
+using RepoVault.Domain.Exceptions;
+using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Git;
 
 namespace RepoVault.CLI.UserInteraction;
@@ -61,16 +64,15 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
             gitRepository = _gitRepository;
             return true;
         }
-
-        gitRepository = null;
+        gitRepository = new GitRepository(new GitService()); //returning empty repository instead of null to not trigger warning.
         return false;
     }
 
     // Authenticate user
     public  void AuthenticateUser(out string correctToken, out IGitRepository correctGitServices)
     {
-        correctToken = null;
-        correctGitServices = null;
+        correctToken = String.Empty;
+        correctGitServices = new GitRepository(new GitService()); //returning empty repository instead of null to not trigger warning.
 
         while (true)
         {
@@ -78,7 +80,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
                 "Paste your Github user token here (don't know how to get one? See guide that I've made: https://github.com/zoneel/RepoVault#how-to-create-my-token): ");
             var token = Console.ReadLine();
 
-            if (CheckUserToken(token, out var gitServices))
+            if (token != null && CheckUserToken(token, out var gitServices))
             {
                 correctToken = token;
                 correctGitServices = gitServices;
@@ -113,8 +115,7 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
     {
         if (!gitRepository.CheckIfRepositoryExists(repoName))
         {
-            Console.WriteLine("Repository does not exist. Please try again.");
-            return;
+            throw new NullIssueException("Repository does not exist. Please try again.");
         }
 
         var issues = await gitRepository.ShowAllIssueForRepoAsync(token, repoName);

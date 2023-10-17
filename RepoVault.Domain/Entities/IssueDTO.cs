@@ -2,7 +2,7 @@
 
 public class IssueDto
 {
-    public IssueDto(string title, string body, string state, string createdAt, string updatedAt, string closedAt,
+    public IssueDto(string title, string body, string state, string createdAt, string? updatedAt, string? closedAt,
         string author, string url)
     {
         Title = title;
@@ -19,8 +19,8 @@ public class IssueDto
     public string Body { get; set; }
     public string State { get; set; }
     public string CreatedAt { get; set; }
-    public string UpdatedAt { get; set; }
-    public string ClosedAt { get; set; }
+    public string? UpdatedAt { get; set; }
+    public string? ClosedAt { get; set; }
     public string Author { get; set; }
     public string Url { get; set; }
 }

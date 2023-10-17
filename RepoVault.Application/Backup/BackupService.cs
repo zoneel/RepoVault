@@ -11,13 +11,14 @@ public class BackupService : IBackupService
 
     private readonly IGitService _gitService;
     private readonly IEncryptionService _encryptionService;
-    private readonly string _backupFolderPath = Path.Combine("C:\\", "RepoVaultBackups"); //TODO: subject to change to appsettings.json file
+    private readonly string _backupFolderPath;
 
 
     public BackupService(IGitService gitService, IEncryptionService encryptionService)
     {
         _gitService = gitService;
         _encryptionService = encryptionService;
+        _backupFolderPath = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory) ?? string.Empty, "RepoVaultBackups");
     }
 
     #endregion
@@ -62,7 +63,7 @@ public class BackupService : IBackupService
             if (!Directory.Exists(_backupFolderPath))
             {
                 Console.WriteLine("Directory not found.");
-                return null;
+                return new Dictionary<DateTime, string>();
             }
 
             // Get an array of directory paths
@@ -96,7 +97,7 @@ public class BackupService : IBackupService
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
-            return null;
+            return new Dictionary<DateTime, string>();
         }
     }
 
@@ -107,7 +108,7 @@ public class BackupService : IBackupService
         var latestBackups = backups.GroupBy(kv => kv.Value)
             .Select(group =>
             {
-                var latestBackup = group.OrderByDescending(kv => kv.Key).First();
+                var latestBackup = group.MaxBy(kv => kv.Key);
                 return new KeyValuePair<DateTime, string>(latestBackup.Key, latestBackup.Value);
             })
             .ToDictionary(kv => kv.Key, kv => kv.Value);

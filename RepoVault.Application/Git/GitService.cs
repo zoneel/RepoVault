@@ -95,7 +95,8 @@ public class GitService : IGitService
         };
         var repoCreated = await _githubClient.Repository.Create(newRepo);
         Console.WriteLine($"Created new remote backup at {repoCreated.HtmlUrl}");
-        var path = Path.Combine("C:\\RepoVaultBackups", repositoryName).Replace("_", " ");
+        var backupFolderPath = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory) ?? string.Empty, "RepoVaultBackups");
+        var path = Path.Combine(backupFolderPath, repositoryName).Replace("_", " ");
         await UploadIssuesToRepositoryAsync(repoCreated.Owner.Login, repoCreated.Name, path);
     }
 
