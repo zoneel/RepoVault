@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RepoVault.Infrastructure.Database.Models;
 
 namespace RepoVault.Infrastructure.Database;
 
 public class RepoVaultDbContext : DbContext
 {
-    public DbSet<BackupLog> BackupLogs { get; set; }
+    public required DbSet<BackupLog> BackupLogs { get; set; }
 
     public RepoVaultDbContext()
     {

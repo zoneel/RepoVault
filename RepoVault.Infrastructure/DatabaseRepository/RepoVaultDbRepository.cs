@@ -1,6 +1,9 @@
-﻿namespace RepoVault.Infrastructure.Database;
+﻿using RepoVault.Infrastructure.Database;
+using RepoVault.Infrastructure.Database.Models;
 
-public class RepoVaultDbRepository
+namespace RepoVault.Infrastructure.DatabaseRepository;
+
+public class RepoVaultDbRepository : IRepoVaultDbRepository
 {
     private readonly RepoVaultDbContext _dbContext;
 

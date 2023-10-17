@@ -9,13 +9,13 @@ public class BackupService : IBackupService
 {
     #region Constructor and Dependencies
 
-    private readonly string backupFolderPath;
     private readonly IGitService _gitService;
     private readonly IEncryptionService _encryptionService;
+    private readonly string _backupFolderPath = Path.Combine("C:\\", "RepoVaultBackups"); //TODO: subject to change to appsettings.json file
 
-    public BackupService(string backupBasePath, IGitService gitService, IEncryptionService encryptionService)
+
+    public BackupService(IGitService gitService, IEncryptionService encryptionService)
     {
-        backupFolderPath = Path.Combine(backupBasePath, "RepoVaultBackups");
         _gitService = gitService;
         _encryptionService = encryptionService;
     }
@@ -27,9 +27,9 @@ public class BackupService : IBackupService
     // Method to create a backup folder
     public void CreateBackupFolder(string repoName, out string repoBackupFolderPath)
     {
-        if (!Directory.Exists(backupFolderPath)) Directory.CreateDirectory(backupFolderPath);
+        if (!Directory.Exists(_backupFolderPath)) Directory.CreateDirectory(_backupFolderPath);
 
-        repoBackupFolderPath = Path.Combine(backupFolderPath, $"{repoName} {DateTime.Now:yyyy-MM-dd-HH-mm-ss}");
+        repoBackupFolderPath = Path.Combine(_backupFolderPath, $"{repoName} {DateTime.Now:yyyy-MM-dd-HH-mm-ss}");
         if (!Directory.Exists(repoBackupFolderPath)) Directory.CreateDirectory(repoBackupFolderPath);
     }
 
@@ -59,14 +59,14 @@ public class BackupService : IBackupService
         try
         {
             // Check if the directory exists
-            if (!Directory.Exists(backupFolderPath))
+            if (!Directory.Exists(_backupFolderPath))
             {
                 Console.WriteLine("Directory not found.");
                 return null;
             }
 
             // Get an array of directory paths
-            var directoryPaths = Directory.GetDirectories(backupFolderPath);
+            var directoryPaths = Directory.GetDirectories(_backupFolderPath);
 
             // Create a dictionary to store the results
             var directoryDictionary = new Dictionary<DateTime, string>();
@@ -119,14 +119,14 @@ public class BackupService : IBackupService
             var latestBackupKey = latestBackups.FirstOrDefault(x => x.Value == repositoryName).Key;
             //get the path of the latest backup
             var folderName = $"{repositoryName} {latestBackupKey:yyyy-MM-dd-HH-mm-ss}";
-            var latestBackupPath = Path.Combine(backupFolderPath, folderName);
+            var latestBackupPath = Path.Combine(_backupFolderPath, folderName);
             //decrypt the latest backup
              _encryptionService.DecryptFolderAsync(latestBackupPath, token).Wait();
 
-            var RepositoryAlreadyExistsOnGithub =
+            var repositoryAlreadyExistsOnGithub =
                 _gitService.GetAllRepositoriesNamesAsync().Result.Contains(folderName.Replace(" ", "_"));
 
-            if (RepositoryAlreadyExistsOnGithub)
+            if (repositoryAlreadyExistsOnGithub)
             {
                 Console.WriteLine(
                     "Latest backup already exists on Github. Update current one by creating a new backup.");

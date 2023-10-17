@@ -19,7 +19,7 @@ public class EncryptionService : IEncryptionService
             {
                 string jsonData = await File.ReadAllTextAsync(filePath);
 
-                string encryptedData = EncryptStringAES(jsonData, key);
+                string encryptedData = EncryptStringAes(jsonData, key);
 
                 string encryptedFilePath = filePath + ".encrypted";
                 await File.WriteAllTextAsync(encryptedFilePath, encryptedData);
@@ -45,7 +45,7 @@ public class EncryptionService : IEncryptionService
             {
                 string encryptedData = await File.ReadAllTextAsync(filePath);
 
-                string decryptedData = DecryptStringAES(encryptedData, key);
+                string decryptedData = DecryptStringAes(encryptedData, key);
 
                 string decryptedFilePath = Path.Combine(folderPath, Path.GetFileNameWithoutExtension(filePath));
                 await File.WriteAllTextAsync(decryptedFilePath, decryptedData);
@@ -67,7 +67,7 @@ public class EncryptionService : IEncryptionService
         }
     }
 
-    public string EncryptStringAES(string plainText, byte[] password)
+    public string EncryptStringAes(string plainText, byte[] password)
     {
         using (Aes aesAlg = Aes.Create())
         {
@@ -90,7 +90,7 @@ public class EncryptionService : IEncryptionService
         }
     }
 
-    public string DecryptStringAES(string cipherText, byte[] password)
+    public string DecryptStringAes(string cipherText, byte[] password)
     {
         using (Aes aesAlg = Aes.Create())
         {

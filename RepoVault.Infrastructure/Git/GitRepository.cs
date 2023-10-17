@@ -1,25 +1,29 @@
 ﻿using RepoVault.Application.Git;
 using RepoVault.Domain.Entities;
 
-namespace RepoVault.Infrastructure.Services;
+namespace RepoVault.Infrastructure.Git;
 
 public class GitRepository : IGitRepository
 {
     #region Constructor and Dependencies
 
-    private readonly string _token;
     private readonly IGitService _gitService;
 
-    public GitRepository(string token)
+    public GitRepository(IGitService gitService)
     {
-        _gitService = new GitService(token);
-        _token = token;
+        _gitService = gitService;
     }
 
     #endregion
+
+    private void AttachToken(string token)
+    {
+        _gitService.InitializeToken(token);
+    }
     
     public bool UserIsAuthenticated(string token)
     {
+        AttachToken(token);
         try
         {
             return _gitService.GetAuthenticatedUserLoginAsync().Result != null;
@@ -40,7 +44,6 @@ public class GitRepository : IGitRepository
 
     public async Task<string> GetAuthenticatedUserLoginAsync(string token)
     {
-        GitService gitService = new(token);
         return await _gitService.GetAuthenticatedUserLoginAsync();
     }
 
@@ -52,7 +55,7 @@ public class GitRepository : IGitRepository
         return repoNames;
     }
 
-    public async Task<IReadOnlyList<IssueDTO>> ShowAllIssueForRepoAsync(string token, string repositoryName)
+    public async Task<IReadOnlyList<IssueDto>> ShowAllIssueForRepoAsync(string token, string repositoryName)
     {
         var issues = await _gitService.GetAllIssuesForRepositoryAsync(repositoryName);
         return issues;

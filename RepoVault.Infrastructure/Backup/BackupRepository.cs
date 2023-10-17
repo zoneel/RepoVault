@@ -1,7 +1,8 @@
 ﻿using RepoVault.Application.Backup;
 using RepoVault.Application.Encryption;
-using RepoVault.Application.Git;
 using RepoVault.Infrastructure.Database;
+using RepoVault.Infrastructure.Database.Models;
+using RepoVault.Infrastructure.DatabaseRepository;
 
 namespace RepoVault.Infrastructure.Backup;
 
@@ -9,14 +10,14 @@ public class BackupRepository : IBackupRepository
 {
     #region Constructor and Dependencies
 
-    private readonly BackupService _backupService;
-    private readonly EncryptionService _encryptionService;
-    private readonly RepoVaultDbRepository _repoVaultDbRepository;
+    private readonly IBackupService _backupService;
+    private readonly IEncryptionService _encryptionService;
+    private readonly IRepoVaultDbRepository _repoVaultDbRepository;
 
-    public BackupRepository(IGitService gitService, EncryptionService encryptionService,
-        RepoVaultDbRepository repoVaultDbRepository)
+    public BackupRepository(IBackupService backupService, IEncryptionService encryptionService,
+        IRepoVaultDbRepository repoVaultDbRepository)
     {
-        _backupService = new BackupService("C:\\", gitService, encryptionService);
+        _backupService = backupService;
         _encryptionService = encryptionService;
         _repoVaultDbRepository = repoVaultDbRepository;
     }
@@ -45,7 +46,7 @@ public class BackupRepository : IBackupRepository
         var latestBackups = backups.GroupBy(kv => kv.Value)
             .Select(group =>
             {
-                var latestBackup = group.OrderByDescending(kv => kv.Key).First();
+                var latestBackup = group.MaxBy(kv => kv.Key);
                 return new KeyValuePair<DateTime, string>(latestBackup.Key, latestBackup.Value);
             })
             .ToDictionary(kv => kv.Key, kv => kv.Value);

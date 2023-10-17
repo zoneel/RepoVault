@@ -1,8 +1,8 @@
 ﻿namespace RepoVault.Domain.Entities;
 
-public class IssueDTO
+public class IssueDto
 {
-    public IssueDTO(string title, string body, string state, string createdAt, string updatedAt, string closedAt,
+    public IssueDto(string title, string body, string state, string createdAt, string updatedAt, string closedAt,
         string author, string url)
     {
         Title = title;

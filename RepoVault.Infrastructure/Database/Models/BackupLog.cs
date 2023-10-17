@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RepoVault.Infrastructure.Database;
+namespace RepoVault.Infrastructure.Database.Models;
 
 public class BackupLog
 {
