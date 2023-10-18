@@ -6,15 +6,12 @@ using RepoVault.CLI.UserInteraction;
 using RepoVault.Infrastructure.Backup;
 using RepoVault.Infrastructure.Database;
 
-
+#region Services Initialization
 var host = ServiceRegistration.CreateHostBuilder(args).Build();
-    var serviceProvider = host.Services;
-
-
+var serviceProvider = host.Services;
 var userInteraction = serviceProvider.GetRequiredService<IUserInteractionService>();
 var gitService = serviceProvider.GetRequiredService<IGitService>();
-//pipeline
-
+#endregion
 #region Database Initialization
 
 await using var context = new RepoVaultDbContext(new DbContextOptionsBuilder<RepoVaultDbContext>()
@@ -24,6 +21,7 @@ await using var context = new RepoVaultDbContext(new DbContextOptionsBuilder<Rep
 context.Database.EnsureCreated();
 
 #endregion
+#region Main Pipeline
 
 userInteraction.ShowMenu();
 userInteraction.AuthenticateUser(out var token, out var gitServices); 
@@ -37,38 +35,10 @@ while (!quit)
     switch (response)
     {
         case "1":
-            Console.WriteLine("Here are your repositories: ");
-            userInteraction.ShowUserRepositories(gitServices, token);
-            userInteraction.ShowStyledResponse("Enter name of repository you want to see the issues for: ");
-            var repoName = Console.ReadLine();
-            if (string.IsNullOrEmpty(repoName))
-            {
-                Console.WriteLine("Invalid input. Please try again!");
-                break;
-            }
-
-            try
-            {
-                await userInteraction.ShowRepoIssues(gitServices, token, repoName);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                break;
-            }
-            
-            userInteraction.ShowStyledResponse(
-                "Do you want to create backup of this repository and it's issues? (y/n): ");
-            var answer = Console.ReadLine();
-            if (answer == "y") backupRepository.CreateFullBackup(token, repoName);
-
+            await userInteraction.ShowRepositoriesPipeline(userInteraction, gitServices, token, backupRepository);
             break;
         case "2":
-            Console.WriteLine("Here are your latest backups: ");
-            userInteraction.ShowLocalBackups(token);
-            userInteraction.ShowStyledResponse("Enter the name of repository you want to make remote backup for: ");
-            repoName = Console.ReadLine();
-            if (repoName != null) backupRepository.CreateRemoteBackup(repoName, token);
+            userInteraction.ShowBackupsPipeline(userInteraction, token, backupRepository);
             break;
         case "3":
             Console.WriteLine("Goodbye!");
@@ -78,4 +48,10 @@ while (!quit)
             Console.WriteLine("Invalid input. Please try again!");
             break;
     }
+    
+#endregion
+
 }
+
+
+

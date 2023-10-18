@@ -1,4 +1,5 @@
-﻿using RepoVault.Infrastructure.Git;
+﻿using RepoVault.Infrastructure.Backup;
+using RepoVault.Infrastructure.Git;
 
 namespace RepoVault.CLI.UserInteraction;
 
@@ -24,5 +25,12 @@ public interface IUserInteractionService
     
     // Show styled response
     public void ShowStyledResponse(string text);
+
+    public Task ShowRepositoriesPipeline(IUserInteractionService userInteractionService,
+        IGitRepository correctGitServices,
+        string correctToken, IBackupRepository backupRepository1);
+
+    public void ShowBackupsPipeline(IUserInteractionService userInteractionService, string correctToken,
+        IBackupRepository backupRepository1);
 
 }

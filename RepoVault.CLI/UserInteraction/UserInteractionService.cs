@@ -132,4 +132,44 @@ o888o  o888o `Y8bod8P'  888bod8P' `Y8bod8P'     `8'     `Y888""""8o  `V88V""V8P'
         Console.WriteLine(text);
         Console.ForegroundColor = originalColor;
     }
+    
+    public async Task ShowRepositoriesPipeline(IUserInteractionService userInteractionService, IGitRepository correctGitServices,
+        string correctToken, IBackupRepository backupRepository1)
+    {
+        Console.WriteLine("Here are your repositories: ");
+        userInteractionService.ShowUserRepositories(correctGitServices, correctToken);
+        userInteractionService.ShowStyledResponse("Enter name of repository you want to see the issues for: ");
+        var repoName = Console.ReadLine();
+        if (string.IsNullOrEmpty(repoName))
+        {
+            Console.WriteLine("Invalid input. Please try again!");
+            return;
+        }
+
+        try
+        {
+            await userInteractionService.ShowRepoIssues(correctGitServices, correctToken, repoName);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return;
+        }
+
+        userInteractionService.ShowStyledResponse(
+            "Do you want to create backup of this repository and it's issues? (y/n): ");
+        var answer = Console.ReadLine();
+        if (answer == "y") backupRepository1.CreateFullBackup(correctToken, repoName);
+    }
+    
+    public void ShowBackupsPipeline(IUserInteractionService userInteractionService, string correctToken,
+        IBackupRepository backupRepository1)
+    {
+        string? s;
+        Console.WriteLine("Here are your latest backups: ");
+        userInteractionService.ShowLocalBackups(correctToken);
+        userInteractionService.ShowStyledResponse("Enter the name of repository you want to make remote backup for: ");
+        s = Console.ReadLine();
+        if (s != null) backupRepository1.CreateRemoteBackup(s, correctToken);
+    }
 }
