@@ -40,15 +40,15 @@ public class GitService : IGitService
     }
 
     // Method to get all repositories for the authenticated user
-    public async Task<IReadOnlyList<RepositoryDto>> GetAllRepositoriesDataAsync()
+    public async Task<IReadOnlyList<GithubRepository>> GetAllRepositoriesDataAsync()
     {
         var repositories = await _githubClient.Repository.GetAllForCurrent();
 
-        List<RepositoryDto> repositoriesFullData = new();
+        List<GithubRepository> repositoriesFullData = new();
 
         foreach (var repo in repositories)
         {
-            var repoDto = new RepositoryDto(repo.Id, repo.Name, repo.Description, repo.Language, repo.CreatedAt,
+            var repoDto = new GithubRepository(repo.Id, repo.Name, repo.Description, repo.Language, repo.CreatedAt,
                 repo.UpdatedAt, repo.Size, repo.OpenIssuesCount);
             repositoriesFullData.Add(repoDto);
         }
@@ -57,16 +57,16 @@ public class GitService : IGitService
     }
 
     // Method to get all issues for a repository
-    public async Task<IReadOnlyList<IssueDto>> GetAllIssuesForRepositoryAsync(string repositoryName)
+    public async Task<IReadOnlyList<GithubIssue>> GetAllIssuesForRepositoryAsync(string repositoryName)
     {
         var userLogin = await GetAuthenticatedUserLoginAsync();
         var issues = await _githubClient.Issue.GetAllForRepository(userLogin, repositoryName);
 
-        List<IssueDto> issuesFullData = new();
+        List<GithubIssue> issuesFullData = new();
 
         foreach (var issue in issues)
         {
-            var issueDto = new IssueDto(issue.Title, issue.Body, issue.State.Value.ToString(),
+            var issueDto = new GithubIssue(issue.Title, issue.Body, issue.State.Value.ToString(),
                 issue.CreatedAt.ToString(), issue.UpdatedAt.ToString(), issue.ClosedAt.ToString(), issue.User.Login,
                 issue.Url);
             issuesFullData.Add(issueDto);
@@ -76,12 +76,12 @@ public class GitService : IGitService
     }
 
     // Method to get all data for a repository
-    public async Task<RepositoryDto> GetAllDataForRepositoryAsync(string repositoryName)
+    public async Task<GithubRepository> GetAllDataForRepositoryAsync(string repositoryName)
     {
         var userLogin = await GetAuthenticatedUserLoginAsync();
         var repository = await _githubClient.Repository.Get(userLogin, repositoryName);
 
-        var repoDto = new RepositoryDto(repository.Id, repository.Name, repository.Description, repository.Language,
+        var repoDto = new GithubRepository(repository.Id, repository.Name, repository.Description, repository.Language,
             repository.CreatedAt, repository.UpdatedAt, repository.Size, repository.OpenIssuesCount);
         return repoDto;
     }
@@ -109,7 +109,7 @@ public class GitService : IGitService
             if (file.Name == "repo_backup.json") continue;
             var jsonContent = await File.ReadAllTextAsync(file.FullName);
 
-            var myData = JsonSerializer.Deserialize<IssueDto>(jsonContent);
+            var myData = JsonSerializer.Deserialize<GithubIssue>(jsonContent);
 
             if (myData != null)
             {

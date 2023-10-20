@@ -6,7 +6,7 @@ using RepoVault.Infrastructure.DatabaseRepository;
 
 namespace RepoVault.Infrastructure.Backup;
 
-public class BackupRepository : IBackupRepository
+internal class BackupRepository : IBackupRepository
 {
     #region Constructor and Dependencies
 

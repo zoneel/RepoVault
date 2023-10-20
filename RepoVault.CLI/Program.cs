@@ -12,15 +12,14 @@ var serviceProvider = host.Services;
 var userInteraction = serviceProvider.GetRequiredService<IUserInteractionService>();
 var gitService = serviceProvider.GetRequiredService<IGitService>();
 #endregion
+
 #region Database Initialization
 
-await using var context = new RepoVaultDbContext(new DbContextOptionsBuilder<RepoVaultDbContext>()
-    .UseSqlite("Data Source=RepoVault.db")
-    .Options);
-
+var context = serviceProvider.GetRequiredService<RepoVaultDbContext>();
 context.Database.EnsureCreated();
 
 #endregion
+
 #region Main Pipeline
 
 userInteraction.ShowMenu();

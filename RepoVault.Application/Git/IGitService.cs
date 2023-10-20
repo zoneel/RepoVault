@@ -6,9 +6,9 @@ public interface IGitService
 {
     public Task<string> GetAuthenticatedUserLoginAsync();
     public Task<IReadOnlyList<string>> GetAllRepositoriesNamesAsync();
-    public Task<IReadOnlyList<IssueDto>> GetAllIssuesForRepositoryAsync(string repositoryName);
-    public Task<IReadOnlyList<RepositoryDto>> GetAllRepositoriesDataAsync();
-    public Task<RepositoryDto> GetAllDataForRepositoryAsync(string repositoryName);
+    public Task<IReadOnlyList<GithubIssue>> GetAllIssuesForRepositoryAsync(string repositoryName);
+    public Task<IReadOnlyList<GithubRepository>> GetAllRepositoriesDataAsync();
+    public Task<GithubRepository> GetAllDataForRepositoryAsync(string repositoryName);
     public Task UploadRemoteRepositoryAsync(string repositoryName);
     public Task UploadIssuesToRepositoryAsync(string owner, string repoName, string localRepositoryPath);
     public Task InitializeToken(string token);

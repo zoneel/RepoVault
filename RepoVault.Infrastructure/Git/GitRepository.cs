@@ -55,7 +55,7 @@ public class GitRepository : IGitRepository
         return repoNames;
     }
 
-    public async Task<IReadOnlyList<IssueDto>> ShowAllIssueForRepoAsync(string token, string repositoryName)
+    public async Task<IReadOnlyList<GithubIssue>> ShowAllIssueForRepoAsync(string token, string repositoryName)
     {
         var issues = await _gitService.GetAllIssuesForRepositoryAsync(repositoryName);
         return issues;
